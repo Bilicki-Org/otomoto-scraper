@@ -156,6 +156,8 @@ class OfferParser:
         response = self.client.get(url)
         if not response: return None
 
+        response.encoding = 'utf-8'
+
         soup = BeautifulSoup(response.text, 'html.parser')
         
         desc_div = soup.find('div', {'data-testid': 'textWrapper'})
