@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Optional
 from bs4 import BeautifulSoup
 from .otomoto_client import OtomotoClient
 
@@ -19,7 +19,6 @@ class LinkExtractor:
         links = []
         
         # Strategy: Look for all <a> tags containing '/oferta/' in href
-        # This is more robust than relying on specific CSS classes which change often.
         for a_tag in soup.find_all('a', href=True):
             href = a_tag['href']
             if "otomoto.pl/osobowe/oferta/" in href:
@@ -29,12 +28,23 @@ class LinkExtractor:
         # Remove duplicates
         return list(set(links))
 
-    def get_links(self, start_page: int = 1, num_pages: int = 1) -> List[str]:
+    def get_links(self, start_page: int = 1, num_pages: Optional[int] = None) -> List[str]:
+        """
+        Pobiera linki. 
+        Jeśli num_pages jest podane (np. 5), pobierze 5 stron.
+        Jeśli num_pages is None, pobiera aż Otomoto przestanie zwracać wyniki.
+        """
         all_links = []
+        current_page = start_page
         empty_page_count = 0  # Licznik pustych stron pod rząd
-        
-        for i in range(num_pages):
-            current_page = start_page + i
+        pages_processed = 0   # Licznik przetworzonych stron
+
+        while True:
+            # 1. Sprawdzenie limitu stron (jeśli został ustawiony przez użytkownika)
+            if num_pages is not None and pages_processed >= num_pages:
+                logging.info(f"Osiągnięto limit {num_pages} stron. Kończę pobieranie.")
+                break
+
             url = f"{self.base_url}?search%5Border%5D=created_at_first%3Adesc&page={current_page}"
             
             logging.info(f"Scraping links from page {current_page}...")
@@ -47,7 +57,8 @@ class LinkExtractor:
                 if not page_links:
                     logging.warning(f"No links found on page {current_page}.")
                     empty_page_count += 1
-                    if empty_page_count >= 3:  # Jeśli 3 strony pod rząd są puste -> KONIEC
+                    # Jeśli 3 strony pod rząd są puste -> KONIEC (nawet jeśli num_pages=None)
+                    if empty_page_count >= 3: 
                         logging.info("Three consecutive empty pages. Stopping pagination.")
                         break
                 else:
@@ -56,5 +67,9 @@ class LinkExtractor:
                     all_links.extend(page_links)
             else:
                 logging.warning(f"Skipping page {current_page} due to connection error.")
+                
+            # Przechodzimy do kolejnej strony
+            current_page += 1
+            pages_processed += 1
                 
         return list(set(all_links))

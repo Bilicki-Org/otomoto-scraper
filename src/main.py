@@ -70,7 +70,7 @@ def main():
     # UWAGA: Tu ustawiasz ile stron chcesz pobrać.
     # Jeśli chcesz wszystko, musisz zmienić logikę w LinkExtractor, żeby szedł do końca.
     # Na razie testowo np. 5 stron.
-    links = extractor.get_links(start_page=1, num_pages=5) 
+    links = extractor.get_links(start_page=1, num_pages=None) 
     
     logging.info(f"🔗 Extracted {len(links)} links. Starting processing...")
     
