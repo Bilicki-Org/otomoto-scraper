@@ -1,4 +1,4 @@
-# Projekt MLOps: Otomoto (Azure ML)
+# MLOps Project: Otomoto (Azure ML)
 
 A simulation project aimed at implementing a Machine Learning model in the Azure cloud environment.
 
