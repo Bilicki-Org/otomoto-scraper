@@ -133,3 +133,17 @@ otomoto-scraper/
 ├── README.md            # Project documentation
 └── requirements.txt     # Python dependencies (pinned versions)
 ```
+
+## 📊 Data Preview
+
+The pipeline extracts over 30 features for each vehicle. Below is a simplified preview of key columns from the dataset:
+
+| brand      | model             | year | price     | currency | mileage_km | fuel_type | power_hp | location_city |
+|------------|-------------------|------|-----------|----------|------------|-----------|----------|---------------|
+| Renault    | Koleos            | 2015 | 32 500.0  | PLN      | 199 000    | Diesel    | 150.0    | Ostrowiec Św. |
+| Toyota     | Auris             | 2014 | 42 900.0  | PLN      | 148 000    | Hybryda   | 99.0     | Warszawa      |
+| Audi       | A3                | 2008 | 15 900.0  | PLN      | 182 000    | Benzyna   | 102.0    | Brzeg Dolny   |
+| Land Rover | Range Rover Evoque| 2021 | 124 900.0 | PLN      | 75 000     | Benzyna   | 249.0    | Staszów       |
+| Ford       | Mondeo            | 2015 | 29 999.0  | PLN      | 245 084    | Diesel    | 150.0    | Szczecin      |
+
+> **Note:** The full dataset includes comprehensive technical details like `engine_capacity_cm3`, `drive`, `body_type`, `gearbox`, and original listing URLs.
