@@ -4,7 +4,7 @@ from connect_utils import get_ml_client
 
 def upload_data_to_azure(file_path: str, data_name: str, version: str) -> None:
     try:
-        # 1. Pobierz klienta (połączenie)
+        # Connect to Azure ML
         ml_client = get_ml_client()
         print(f"Connecting with: {ml_client.workspace_name}")
 
@@ -16,7 +16,7 @@ def upload_data_to_azure(file_path: str, data_name: str, version: str) -> None:
             version=version
         )
 
-        # 3. Wyślij (Create or Update)
+        # 3. Send data to Azure ML
         print(f"Sending '{data_name}' (v{version}) to the cloud...")
         ml_client.data.create_or_update(my_data)
         print("Sending completed!")

@@ -30,19 +30,19 @@ class LinkExtractor:
 
     def get_links(self, start_page: int = 1, num_pages: Optional[int] = None) -> List[str]:
         """
-        Pobiera linki. 
-        Jeśli num_pages jest podane (np. 5), pobierze 5 stron.
-        Jeśli num_pages is None, pobiera aż Otomoto przestanie zwracać wyniki.
+        Downloads links to individual car offers.
+        If num_pages is provided (e.g., 5), it will fetch 5 pages.
+        If num_pages is None, it fetches until Otomoto stops returning results.
         """
         all_links = []
         current_page = start_page
-        empty_page_count = 0  # Licznik pustych stron pod rząd
-        pages_processed = 0   # Licznik przetworzonych stron
+        empty_page_count = 0  # Counter for consecutive empty pages
+        pages_processed = 0   # Counter for total pages processed
 
         while True:
-            # 1. Sprawdzenie limitu stron (jeśli został ustawiony przez użytkownika)
+            # 1. Check if we reached the page limit
             if num_pages is not None and pages_processed >= num_pages:
-                logging.info(f"Osiągnięto limit {num_pages} stron. Kończę pobieranie.")
+                logging.info(f"Reached {num_pages} pages. Stopping pagination.")
                 break
 
             url = f"{self.base_url}?search%5Border%5D=created_at_first%3Adesc&page={current_page}"
@@ -53,22 +53,22 @@ class LinkExtractor:
             if response:
                 page_links = self._extract_links_from_html(response.text)
                 
-                # --- LOGIKA WCZESNEGO ZATRZYMANIA ---
+                # --- EARLY STOPPING LOGIC ---
                 if not page_links:
                     logging.warning(f"No links found on page {current_page}.")
                     empty_page_count += 1
-                    # Jeśli 3 strony pod rząd są puste -> KONIEC (nawet jeśli num_pages=None)
+                    # If 3 consecutive pages are empty -> STOP (even if num_pages=None)
                     if empty_page_count >= 3: 
                         logging.info("Three consecutive empty pages. Stopping pagination.")
                         break
                 else:
-                    empty_page_count = 0  # Resetujemy licznik, jeśli coś znaleźliśmy
+                    empty_page_count = 0  # Counter resets if we find links
                     logging.info(f"Found {len(page_links)} links on page {current_page}.")
                     all_links.extend(page_links)
             else:
                 logging.warning(f"Skipping page {current_page} due to connection error.")
                 
-            # Przechodzimy do kolejnej strony
+            # Head to the next page
             current_page += 1
             pages_processed += 1
                 
