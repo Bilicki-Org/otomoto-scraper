@@ -1,0 +1,26 @@
+name: CI Scraper Pipeline
+
+# When to turn it on? While pushing code to main and with Pull Requests
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    # Using Ubuntu virtual machine
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the code from the repository
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Step 2: Build the Docker image
+    - name: Build Docker Image
+      run: docker build . --file Dockerfile --tag otomoto-scraper:test
+
+    # Step 3: Verify the Docker image runs correctly
+    - name: Verify Container Runs
+      run: docker run --rm otomoto-scraper:test python --version
