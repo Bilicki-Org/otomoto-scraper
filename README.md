@@ -1,12 +1,135 @@
-# MLOps Project: Otomoto (Azure ML)
+# 🚗 Otomoto Data Ingestion Pipeline
 
-A simulation project aimed at implementing a Machine Learning model in the Azure cloud environment.
+[![CI Pipeline](https://github.com/Bilicki-Org/otomoto-scraper/actions/workflows/ci.yaml/badge.svg)](https://github.com/Bilicki-Org/otomoto-scraper/actions)
+[![Python Version](https://img.shields.io/badge/python-3.11-blue.svg)](https://python.org)
+[![Docker](https://img.shields.io/badge/docker-ready-green.svg)](https://www.docker.com/)
+[![Cloud](https://img.shields.io/badge/Azure-Blob_Storage-0078D4.svg)](https://azure.microsoft.com/en-us/services/storage/blobs/)
 
-## Technologies
-* Python 3.10+
-* Azure Machine Learning (SDK v2)
-* Scikit-learn
-* Docker
+## 📋 Project Overview
 
-## Setup
-Copy `.env.example` to `.env` and fill in the keys.
+This repository contains a robust **ETL (Extract, Transform, Load) pipeline** designed to harvest automotive data from Otomoto.pl. The system scrapes vehicle listings, processes them, and securely uploads raw datasets directly to **Azure Blob Storage**.
+
+The goal is to build a comprehensive, historical dataset for training Machine Learning models (specifically for Price Prediction). Unlike simple scrapers, this project follows **MLOps best practices**: containerization, cloud integration, and automated CI testing.
+
+---
+
+### 🏗 Architecture
+
+```mermaid
+graph LR
+    A[Otomoto.pl] -->|Scraping HTTP/HTML| B(Docker Container / Python);
+    B -->|Direct Upload| C[Azure Blob Storage];
+    C -->|Raw Data CSV| D[Future ML Pipeline];
+    E[GitHub Repo] -->|Push / PR| F[GitHub Actions];
+    F -->|Build & Smoke Test| B;
+```
+
+**Key Features:**
+* **Containerized Environment:** Fully dockerized application ensures reproducibility across different environments (Dev/Prod).
+* **Direct Cloud Integration:** Scraped data is automatically streamed to **Azure Blob Storage**, eliminating local storage dependencies.
+* **CI/CD Pipeline:** Automated GitHub Actions workflow builds the Docker image and performs smoke tests on every push to the `main` branch.
+* **Clean Code Standards:** Modular structure (`src/` layout), Type Hinting, and dependency management via `requirements.txt`.
+
+---
+
+## 🛠 Tech Stack
+
+* **Language:** Python 3.11
+* **Core Libraries:** `requests`, `beautifulsoup4`, `pandas`
+* **Cloud SDK:** `azure-storage-blob`
+* **Infrastructure:** Docker
+* **CI/CD:** GitHub Actions
+
+---
+
+## 🚀 Getting Started
+
+Follow these instructions to run the pipeline locally or in a container.
+
+### Prerequisites
+
+* Docker Desktop installed
+* Git installed
+* Azure Storage Account (Connection String)
+
+### 1. Clone the repository
+
+```bash
+git clone [https://github.com/Bilicki-Org/otomoto-scraper.git](https://github.com/Bilicki-Org/otomoto-scraper.git)
+cd otomoto-scraper
+```
+
+### 2. Configuration (.env)
+
+Security first. The application requires environment variables to access Azure resources.
+Create a `.env` file in the root directory based on the example:
+
+```bash
+# Copy the example file
+cp .env.example .env
+```
+
+Open `.env` and fill in your Azure credentials:
+```ini
+AZURE_STORAGE_CONNECTION_STRING="your_actual_azure_connection_string_here"
+```
+
+> **Note:** The `.env` file is git-ignored to prevent leaking credentials.
+
+### 3. Run with Docker (Recommended)
+
+Running in Docker guarantees that the environment matches the production setup.
+
+**Build the image:**
+```bash
+docker build -t otomoto-scraper:latest .
+```
+
+**Run the scraper:**
+(We pass the `.env` file to the container so it can authenticate with Azure)
+```bash
+docker run --rm --env-file .env otomoto-scraper:latest
+```
+
+---
+
+## 💻 Local Development (Without Docker)
+
+If you want to contribute, debug, or run the code without Docker:
+
+1.  **Create virtual environment:**
+    ```bash
+    python -m venv .venv
+    # Windows:
+    .venv\Scripts\activate
+    # Linux/Mac:
+    source .venv/bin/activate
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+3.  **Run the script:**
+    ```bash
+    python src/main.py
+    ```
+
+---
+
+## 📂 Project Structure
+
+```text
+otomoto-scraper/
+├── .github/workflows/   # CI/CD Pipeline definitions
+├── src/                 # Source code
+│   ├── main.py          # Entry point & Logic
+│   └── ...              # Helper modules
+├── .dockerignore        # Optimizes Docker build context
+├── .env.example         # Template for environment variables
+├── .gitignore           # Git ignore rules
+├── Dockerfile           # Docker image definition
+├── README.md            # Project documentation
+└── requirements.txt     # Python dependencies (pinned versions)
+```
