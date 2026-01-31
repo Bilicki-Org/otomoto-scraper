@@ -5,15 +5,8 @@ from bs4 import BeautifulSoup
 from .otomoto_client import OtomotoClient
 
 class OfferParser:
-    """
-    Extracts raw attributes from a single offer page.
-    Cleaned version: NO AI here. Just raw data extraction.
-    """
-
     def __init__(self, client: OtomotoClient):
         self.client = client
-        # USUNIĘTO: self.llm = LLMAnalyzer() 
-        # Scraper ma być lekki!
 
     def _clean_numeric(self, value: Any) -> Optional[float]:
         if not value: return None
@@ -43,7 +36,7 @@ class OfferParser:
             elif price_data['price']:
                 price_data['currency'] = "PLN" 
         except Exception:
-            pass # Ignorujemy błędy ceny, zostaną None
+            pass # We silently ignore price extraction errors
         return price_data
 
     def _extract_location_html(self, soup: BeautifulSoup) -> Dict[str, str]:

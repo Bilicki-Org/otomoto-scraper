@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from azure.ai.ml import MLClient
 from azure.identity import DefaultAzureCredential
 
-# Ładujemy zmienne z pliku .env (tylko lokalnie)
+# Load environment variables from .env file (only for local development)
 load_dotenv()
 
 def get_ml_client() -> MLClient:
@@ -32,14 +32,14 @@ def main() -> None:
     
     try:
         client = get_ml_client()
-        # Prosta operacja sprawdzająca - pobranie nazwy workspace'u z chmury
+        # Simple check operation - get the workspace name from the cloud
         ws = client.workspaces.get(client.workspace_name)
-        print(f"✅ Success! Connected to Workspace: {ws.name}")
-        print(f"📍 Location: {ws.location}")
-        print(f"📝 Description: {ws.description}")
+        print(f"Success! Connected to Workspace: {ws.name}")
+        print(f"Location: {ws.location}")
+        print(f"Description: {ws.description}")
         
     except Exception as e:
-        print(f"❌ Error connecting: {e}")
+        print(f"Error connecting: {e}")
         print("Hint: Did you create a Workspace in the Azure portal and enter the data in .env?")
 
 if __name__ == "__main__":
