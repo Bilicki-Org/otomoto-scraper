@@ -1,0 +1,19 @@
+# Git
+.git
+.gitignore
+
+# Python environments
+.venv
+venv
+ENV
+
+# Bytecode
+__pycache__
+*.pyc
+
+# Data
+*.csv
+data/
+
+# Secrets
+.env
